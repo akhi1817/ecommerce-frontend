@@ -35,3 +35,15 @@
   }
 }
 
+.user-menu {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.position-relative:hover .user-menu {
+  display: block !important;
+}
+
+

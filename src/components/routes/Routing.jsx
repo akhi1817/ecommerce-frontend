@@ -6,6 +6,7 @@ import Shop from '../../pages/Shop/Shop.jsx';
 import Contact from '../../pages/Contact/Contact.jsx';
 import Login from '../../pages/Login/Login.jsx';
 import Register from '../../pages/Register/Register.jsx';
+import AdminPanel from '../../pages/Admin/AdminPanel.jsx';
 
 const Routing = () => {
   return (
@@ -17,6 +18,7 @@ const Routing = () => {
         <Route path="/shop" element={<Shop />} />
         <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<Register/>}/>
+        <Route path='/admin-panel' element={<AdminPanel/>}/>
 
       </Routes>
     </>

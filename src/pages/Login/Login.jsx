@@ -6,9 +6,12 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import AxiosToastError from "../../config/AxiosToastError";
 import { API_ENDPOINTS } from "../../config/api";
+import { useDispatch } from 'react-redux'; // Import useDispatch
+import { setUserDetails } from '../../store/userSlice'; // Import setUserDetails action
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();  // Initialize dispatch
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Email is required"),
@@ -18,23 +21,31 @@ const Login = () => {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     setSubmitting(true);
     try {
-      const response = await axios.post(API_ENDPOINTS.LOGIN, {
-        email: values.email,
-        password: values.password,
-      });
-
+      const response = await axios.post(
+        API_ENDPOINTS.LOGIN,
+        { email: values.email, password: values.password },
+        { withCredentials: true }
+      );
+  
       if (response.data.success) {
-        toast.success("Login Successful!!!", { duration: 5000 });
-        localStorage.setItem("token", response.data.token);
-        navigate("/");
+        toast.success("Login Successful!", { duration: 5000 });
+        
+        // Debugging the response data
+        console.log('Login Response:', response.data);
+   
+        dispatch(setUserDetails(response.data.user));  // Assuming response.data.user contains the user details
+        navigate("/");  // Redirect after successful login
       } else {
         toast.error(response.data.message || "Login failed. Please try again.", { duration: 5000 });
       }
+  
       resetForm();
     } catch (error) {
+      console.error("Login Error:", error);
       AxiosToastError(error);
     }
   };
+  
 
   return (
     <div className="container-fluid">
@@ -46,9 +57,9 @@ const Login = () => {
           <div className="col-md-6">
             <h2 className="text-dark">Sign In</h2>
             <p className="text-secondary">
-              Don't have an account?
+              Don't have an account? 
               <Link to="/register">
-                <span className="text-success fw-bold">Sign Up</span>
+                <span className="text-success fw-bold"> Sign Up</span>
               </Link>
             </p>
             <Formik
@@ -59,17 +70,13 @@ const Login = () => {
               {({ isSubmitting }) => (
                 <Form>
                   <div className="mb-3">
-                    <label htmlFor="email" className="form-label">
-                      Email
-                    </label>
+                    <label htmlFor="email" className="form-label">Email</label>
                     <Field type="email" name="email" id="email" className="form-control" />
                     <ErrorMessage name="email" component="div" className="text-danger" />
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="password" className="form-label">
-                      Password
-                    </label>
+                    <label htmlFor="password" className="form-label">Password</label>
                     <Field type="password" name="password" id="password" className="form-control" />
                     <ErrorMessage name="password" component="div" className="text-danger" />
                   </div>

@@ -6,12 +6,12 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import AxiosToastError from "../../config/AxiosToastError";
 import { API_ENDPOINTS } from "../../config/api";
-import { useDispatch } from 'react-redux'; // Import useDispatch
-import { setUserDetails } from '../../store/userSlice'; // Import setUserDetails action
+import { useDispatch } from 'react-redux'; 
+import { setUserDetails } from '../../store/userSlice';
 
 const Login = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();  // Initialize dispatch
+  const dispatch = useDispatch();  
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Email is required"),
@@ -21,24 +21,17 @@ const Login = () => {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     setSubmitting(true);
     try {
-      const response = await axios.post(
-        API_ENDPOINTS.LOGIN,
-        { email: values.email, password: values.password },
-        { withCredentials: true }
-      );
-  
-      if (response.data.success) {
-        toast.success("Login Successful!", { duration: 5000 });
-        
-        // Debugging the response data
-        console.log('Login Response:', response.data);
-   
-        dispatch(setUserDetails(response.data.user));  // Assuming response.data.user contains the user details
-        navigate("/");  // Redirect after successful login
+      const fetchData = await axios.post(API_ENDPOINTS.LOGIN,{ email: values.email, password: values.password },{ withCredentials: true });
+      if (fetchData.data.success) {
+        toast.success(fetchData.data.message, { duration: 5000 });
+        console.log('Login Response:', fetchData.data);
+        dispatch(setUserDetails(fetchData.data.user)); 
+        localStorage.setItem("user", JSON.stringify(fetchData.data.user));  
+        navigate("/");  
+        window.location.reload();
       } else {
-        toast.error(response.data.message || "Login failed. Please try again.", { duration: 5000 });
+        toast.error(fetchData.data.message || "Login failed. Please try again.", { duration: 5000 });
       }
-  
       resetForm();
     } catch (error) {
       console.error("Login Error:", error);

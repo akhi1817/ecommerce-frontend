@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./userSlice"; // Import the reducer
+import userReducer from "./userSlice"; 
 
 export const store = configureStore({
   reducer: {
-    user: userReducer, // Ensure the key is the same as used in `useSelector`
+    user: userReducer, 
   },
 });

@@ -61,7 +61,7 @@ const Register = () => {
             <p className="text-secondary">
               Already have an account ?
               <Link to="/login"><span className="text-success fw-bold">Sign In</span></Link></p>
-            <Formik initialValues={{name: "",email: "",password: "",confirmPassword: "",}} validationSchema={validationSchema} onSubmit={handleSubmit}>
+                   <Formik initialValues={{name: "",email: "",password: "",confirmPassword: "",}} validationSchema={validationSchema} onSubmit={handleSubmit}>
               {({ isSubmitting }) => (
                 <Form>
                   <div className="mb-3">

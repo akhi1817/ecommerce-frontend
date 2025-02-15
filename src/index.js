@@ -9,6 +9,9 @@ import {Provider} from 'react-redux';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
 import { store } from './store/store.js';
+// import aos scroll animation
+import 'aos/dist/aos.css';
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

@@ -1,56 +1,105 @@
-import React, { useEffect, useState } from 'react';
-import fetchCategoyWiseProduct from '../../config/fetchCategoryWiseProducts';
+import React, { useContext, useEffect, useState } from 'react';
+import {Link} from 'react-router-dom';
+import './app.css';
+import fetchCategoryWiseProduct from '../../config/fetchCategoryWiseProducts';
+import indianCurrency from '../../config/indianCurrency';
+import addToCart from '../../config/addToCart';
+import Context from '../../context';
 
 const HorizontalCard = ({ category, heading }) => {
   const [data, setData] = useState([]);
+  const {fetchCartCount}=useContext(Context)
+
+  const[loading,setLoading]=useState(true)
+
+  const handleAddToCart=async(e,id)=>{
+    await  addToCart(e,id)
+    await fetchCartCount()
+    }
+
 
   const fetchData = async () => {
     try {
-      const categoryProduct = await fetchCategoyWiseProduct(category);
-      console.log("Fetched category product:", categoryProduct);
-
-      // Ensure that the fetched data is an array
-      if (Array.isArray(categoryProduct?.data)) {
-        setData(categoryProduct.data);
-      } else {
-        console.error("Expected data to be an array, got:", categoryProduct?.data?.data);
-        setData([]); // default to an empty array
-      }
+      setLoading(true)
+      const response = await fetchCategoryWiseProduct(category);
+      console.log("Fetched product data:", response.data);
+      
+      const products = response.data.data || response.data || [];
+      setData(products);
+      
     } catch (error) {
-      console.error("Error fetching category products:", error);
-      setData([]); // default to an empty array on error
+      console.error("Error fetching data:", error);
     }
+    finally {
+      // Delay setting loading to false by 2 seconds
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
+
+  
   };
 
   useEffect(() => {
-    fetchData();
-  }, [category]);
+    if (category) {
+      fetchData();
+    }},[category]);
+
+
+  
 
   return (
-    <div>
-      <h2 className='mt-4 ps-4'>{heading}</h2>
-      <div className="row">
-        {data.map((val, index) => (
-          <div key={index} className="col-12 col-md-2 ps-3 mt-3">
-            <div className="card">
-              <img
-                className="img-fluid"
-                src={val.productImage}
-                alt="Product"
-                style={{ width: "100%", height: "200px", objectFit: "cover" }}
-              />
-              <div className="card-body">
-                <h2 className="h5">{val.productName}</h2>
-                <h5 className="text-success">₹{val.sellingPrice}</h5>
-                <div className="d-flex justify-content-end">
-                  <button className="btn btn-success">Action</button>
+    <div className="container position-relative">
+      <h2 className='mt-3 ps-4'>{heading}</h2>
+      <div className='d-flex justify-content-start col-md-12 hide-scrollbar overflow-auto'>
+        
+      {
+        loading ?(
+            data.map(() => (
+          <div className="col-12 col-md-4 ps-3 mt-3" >
+            <div className="card ">
+              <div className="card-body d-flex justify-content-around">
+                <div className='bg-secondary pulse-animation '>
+                <img style={{ width: "200px", height: "130px" }}/>
+
+                </div>
+                <div className='ms-3'>
+                  <p className=" p-3  bg-secondary pulse-animation rounded-pill"></p>
+                  <p className=" p-2  bg-secondary  rounded-pill"></p>
+                    <div className='d-flex'>
+                      <p className=' p-3  bg-secondary pulse-animation'></p>
+                      <p className=' p-3  bg-secondary pulse-animation'></p>
+                    </div>
+                    <button className='btn btn-primary px-5  pulse-animation'></button>
                 </div>
               </div>
             </div>
           </div>
-        ))}
-
-      
+        ))
+        ):(
+        data.map((product, index) =>{
+          return (
+          <Link to={`product/${product?._id}`} key={product?._id || index} className="col-12 col-md-4 ps-3 mt-3 text-decoration-none">
+            <div className="card ">
+              <div className="card-body d-flex justify-content-around">
+                <div className='me-3'>
+                  <img  className="img-fluid"  src={product?.productImage?.[0]}  alt={"Product"}  style={{ width: "200px", height: "130px", objectFit: "cover" }}/>
+                </div>
+                <div className='ms-3'>
+                  <p className="h5 two-line-ellipsis">{product?.productName}</p>
+                  <p className="text-secondary">{product?.category}</p>
+                    <div className='d-flex'>
+                      <p className='me-3 text-success fw-bold'>{indianCurrency(product?.sellingPrice)}</p>
+                      <p className='text-secondary text-decoration-line-through'>{indianCurrency(product?.price)}</p>
+                    </div>
+                    <button className='btn btn-primary px-3' onClick={(e)=>handleAddToCart(e,product?._id)}>Add to Cart</button>
+                </div>
+              </div>
+            </div>
+          </Link>
+        )
+}))
+      } 
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ const Login = () => {
   
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid" style={{paddingTop:'90px'}}>
       <div className="row">
         <div className="col-md-10 d-flex">
           <div className="col-md-6">
